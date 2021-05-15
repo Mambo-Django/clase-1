@@ -16,7 +16,10 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path, include
 
+#sitioweb.com/admin
+
 urlpatterns = [
+    path('', include('encuestas.urls')), # --> sitioweb.com => a la función de encuestas.urls
     path('admin/', admin.site.urls),
     path('encuestas/', include('encuestas.urls'))
 ]
