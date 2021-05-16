@@ -1,28 +1,45 @@
 from django.http import HttpResponse
 from django.shortcuts import render, redirect
 
-usuarios = [ {'name': 'hernan', 'password':'Wilkinson'}, 
-             { 'name': 'fabio', 'password': 'Tobis'} ]
+from encuestas.models import Usuario
+
+from services.register import RegisterModule
+
+import datetime as dt
+
+
+# usuarios = [ {'name': 'hernan', 'password':'Wilkinson'}, 
+#              { 'name': 'fabio', 'password': 'Tobis'} ]
 
 # Create your views here.
 def index(request):
     return HttpResponse("Esta es mi web.")
 
-def otravista(request):
-    return HttpResponse("Esta es otra vista de mi web.")
-
-def suma(request, numero1, numero2):
-    resultado = numero1 + numero2
-    return HttpResponse(resultado)
-    
-def calculadora(request, operacion, numero1, numero2):
-    if operacion == 'suma':
-        return suma(request, numero1, numero2)
-    else:
-        return HttpResponse('no entendí')
-
 def login(request):
     return render(request, 'encuestas/formulario.html')
+
+def registrate(request):
+    # var = RegisterModule.prueba()
+    # print(var)
+    if request.method == 'POST':
+        ## Acá nos aseguramos que se procesó el formulario.
+        usuario_post = request.POST.get('usuario') # Nombre de usuario
+        usuario_existe = Usuario.objects.filter(usuario=usuario_post)
+        
+        if not usuario_existe:
+            # No grabar porque ya está registrado
+            nombre = request.POST.get('nombre')
+            password_post = request.POST.get('password')
+            edad = request.POST.get('edad')
+            fecha_actual = dt.datetime.now()
+            ## HAY QUE REGISTRARLO. 
+            usuario = Usuario.objects.create(nombre=nombre, usuario=usuario_post, password=password_post, edad=edad, edad_padre=edad, fecha_registro=fecha_actual)
+            usuario.save()
+        
+        return render(request, 'encuestas/formulario.html')
+
+    else:
+        return render(request, 'encuestas/formulario_registro.html')
 
 # Acá vamos a crear una función que verifique los usuarios
 def verificar(request):
